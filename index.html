@@ -117,7 +117,6 @@
 		deleteTicket,
 		numerateTickets,
 		addedTicketsCount = 0,
-		numeratePreview,
 		setReferrerToSource;
 	
 	// Заполнение input#referrerSource
@@ -131,17 +130,6 @@
 	setLinkerParam = function setLinkerParam(){
 		if(typeof ga === 'function' && typeof ga.getAll === 'function' && ga.getAll().length ){
 			document.getElementById('linkerParam').value = ga.getAll()[0].get('linkerParam').split('=').pop();
-		}
-	}
-		
-	numeratePreview = function numeratePreview(){
-		var preview = document.getElementsByClassName('php-preview'),
-			lines;
-		for( var i = 0; i<preview.length; i++ ){
-			lines = preview[i].getElementsByClassName('line');
-			for(var j = 0; j<lines.length; j++){
-				lines[j].setAttribute('data-ln', j);
-			}
 		}
 	}
 		
@@ -186,7 +174,6 @@
 
 	document.getElementById('addTicket').onclick = addTicket;
 	numerateTickets();
-	numeratePreview();
 	setReferrerToSource();
 	setLinkerParam();
 	
