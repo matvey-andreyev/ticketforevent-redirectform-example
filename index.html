@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>RedirectForm example for excursion-1— TicketForEvent</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<style>
+	body{ font-family: sans-serif; }
+	.page{ max-width:800px; margin:0 auto; padding:50px 0; }
+	form{ padding:15px; margin-left:-15px; background-color:#f8f8f8; }
+	form label{ display:block; margin:0 0 20px; font-size:90%; }
+	label .name{ display:inline-block; width:100px;  }
+	.ticket{ position:relative; }
+	.ticket .deleteTicket{ opacity:.5; cursor:pointer; border-style:dashed; border-width:0 0 1px; position: absolute; right:10px; top:0; font-size:12px; }
+	.ticket .deleteTicket:hover{ color:#d00; }
+	#fieldSetToCopy .deleteTicket{ display:none; }
+	fieldset{ border-style:solid; margin-bottom:10px; }
+	fieldset legend{ font-variant:small-caps; font-size:80%; padding-left:10px; padding-right:10px; color:#777; }
+	
+	.actions{ text-align:right; padding:5px 0 0; } 
+	.actions button{ border-style:solid; border-width:0; border-radius:5px; padding:6px 12px; }
+	.actions button[type="submit"]{ background-color:#090; color:#fff; }
+	
+	.php-preview{ position:relative; overflow:auto; background-color:rgba(0,0,0,.9); color:#e8e8e8; padding:15px; box-sizing: border-box; font-family: 'Courier New'; font-size:12px; white-space: pre; line-height:1; padding-left:55px; }
+	.php-preview::before{ position:absolute; top:0; left:0; width:40px; content:''; height:100%; z-index:3; background-color:#000; }
+	.line{ display:block; position: relative; margin:0; padding:0; }
+	.line-comment{ color:#090; }
+	.line::before{ color:#555; position: absolute; left:0; top:0; width:30px; margin-left:-55px; height:100%; box-sizing:border-box; display:inline-block; text-align:right; content:attr(data-ln); z-index:5; }
+	
+	</style>
+</head>
+<body>
+
+	<div class="page">
+			
+			
+			
+			<p>Простая форма, отправляющая данные методом POST на гипотетический скрипт save.php. Без использования AJAX.</p>
+			<p>Параметр alias передан в скрытом поле, но его можно и просто подставить на серверной стороне.</p>
+			
+			<form action="save.php" method="post">
+			
+				<!-- Можете передавать alias из формы, или добавлять в коде send.php -->
+				<input type="hidden" name="alias" value="excursion-1" />
+				
+				<fieldset class="ticket" id="fieldSetToCopy">
+					<legend>Билет <span class="number"></span></legend>
+					<!-- Можете передавать тип билета из формы, или добавлять в коде send.php -->
+					<div>
+						<p>Выберите тип билета:</p>
+						<label><input type="radio" name="types[1]" value="excursion_common_ticket" checked="checked" /> Экскурсия для юрлиц</label>
+					</div>
+					
+					<div>
+						<label><span class="name">Какая экскурсия вам нужна?</span></label>
+						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 10 человек (10 часов)" /> Экскурсия на 10 человек (10 часов)</label>
+						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 100 человек (50 часов)" /> Экскурсия на 100 человек (50 часов)</label>
+						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 1000 человек (100 часов)" /> Экскурсия на 1000 человек (100 часов)</label>
+					</div>
+					
+					<div>
+						<label><span class="name">Имя:</span> <input name="fname[1]" /></label>
+					</div>
+					
+					<div>
+						<label><span class="name">Фамилия:</span> <input name="lname[1]" /></label>
+					</div>
+					
+					<div>
+						<label><span class="name">Телефон:</span> <input name="phone[1]" /></label>
+					</div>
+					
+					<div>
+						<label><span class="name">E-mail:</span> <input name="email[1]" /></label>
+					</div>
+					
+					<div>
+						<label><span class="name">Company:</span> <input name="company[1]" /></label>
+					</div>
+
+					
+					<div>
+						<label><span class="name">Планируемая дата посещения:</span> <input name="planned_visit_date[1]" /> (формат: 2020-12-30)</label>
+					</div>
+					
+					<span class="deleteTicket">Удалить этот билет</span>
+					
+				</fieldset>
+					
+				<div>
+					<label><span class="name">Введите цену:</span> <input name="typePrice[excursion_common_ticket]" type="number" /></label>
+				</div>
+				
+				<!-- Для примера — поле, в который JS подставит document.referrer -->
+				<input id="referrerSource" name="source" type="hidden" />
+				
+				<!-- Для примера — поле, в который JS подставит ga.getAll()[0].get('linkerParam') -->
+				<input id="linkerParam" name="_ga" type="hidden" />
+				
+				<div class="actions">
+					<button id="addTicket">Добавить еще один билет</button>
+					<button type="submit">Отправить</button>
+				</div>
+			
+			</form>
+
+			
+	</div>
+
+<script>
+(function(){
+
+	/* JS-код здесь для презентационных целей. На сбор адреса он не влияет. */
+
+	var addTicket,
+		deleteTicket,
+		numerateTickets,
+		addedTicketsCount = 0,
+		numeratePreview,
+		setReferrerToSource;
+	
+	// Заполнение input#referrerSource
+	setReferrerToSource = function setReferrerToSource(){
+		if(document.referrer){
+			document.getElementById('referrerSource').value = document.referrer;
+		}
+	}
+	
+	// Заполнение input#linkerParam данными из первого счетчика Гугл Аналитикс
+	setLinkerParam = function setLinkerParam(){
+		if(typeof ga === 'function' && typeof ga.getAll === 'function' && ga.getAll().length ){
+			document.getElementById('linkerParam').value = ga.getAll()[0].get('linkerParam').split('=').pop();
+		}
+	}
+		
+	numeratePreview = function numeratePreview(){
+		var preview = document.getElementsByClassName('php-preview'),
+			lines;
+		for( var i = 0; i<preview.length; i++ ){
+			lines = preview[i].getElementsByClassName('line');
+			for(var j = 0; j<lines.length; j++){
+				lines[j].setAttribute('data-ln', j);
+			}
+		}
+	}
+		
+	// Добавление билета в форму.
+	addTicket = function addTicket(){
+		var newEl = document.createElement('div'),
+			fieldset = document.getElementById('fieldSetToCopy'),
+			insertPlace = this.parentNode; // div.actions в нашем случае
+		
+		newEl.classList.add('added-ticket');
+		newEl.innerHTML = fieldset.outerHTML.replace('id="fieldSetToCopy"','').replace('types[1]','types[00000000]');
+		
+		insertPlace.parentNode.insertBefore(newEl, insertPlace); 
+		
+		newEl.getElementsByClassName('deleteTicket')[0].onclick = deleteTicket;
+		
+		numerateTickets();
+		return false; //
+		
+	}
+
+	// Удаление билета из формы
+	deleteTicket = function deleteTicket(){
+		var victim = this.parentNode.parentNode;
+		victim.parentNode.removeChild(victim);
+		numerateTickets();
+	}
+
+	numerateTickets = function numerateTickets(){
+		var tickets = document.querySelectorAll('.ticket'),
+			number,
+			inputs;
+		for( var i = 0; i<tickets.length; i++ ){
+			number = tickets[i].getElementsByTagName('legend')[0].getElementsByTagName('span')[0];
+			number.innerHTML = i + 1;
+			inputs = tickets[i].getElementsByTagName('input');
+			for(var j = 0; j< inputs.length; j++){
+				inputs[j].setAttribute('name', inputs[j].getAttribute('name').replace(/\[\d+\]/, '['+ (i+1) +']'));
+			}
+		}
+	}
+
+	document.getElementById('addTicket').onclick = addTicket;
+	numerateTickets();
+	numeratePreview();
+	setReferrerToSource();
+	setLinkerParam();
+	
+})();
+</script>
+	
+</body>
+</html>
