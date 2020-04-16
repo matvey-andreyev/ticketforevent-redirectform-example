@@ -4,7 +4,7 @@
 	$requestData = array();
 
 	// Белый список названий параметров
-	$fieldNamesList = array('alias', 'types', 'fname', 'lname', 'company', 'phone', 'email', 'planned_visit_date', 'purchased_excursion_title', 'typePrice');
+	$fieldNamesList = array('alias', 'types', 'fname', 'lname', 'company', 'phone', 'email', 'planned_visit_date', 'purchased_excursion_title', 'typePrice', 'extra');
 	
 	// Заполнение массива $requestData	
 	foreach($fieldNamesList as $fieldName){
@@ -14,13 +14,14 @@
 	}
 	
 	// Пример добавления идентификатора заявки
-	$requestData['extra'] = [
-		'lead_id' => 1234567890
-	];
+    if( isset($requestData['extra']) === false ){
+        $requestData['extra'] = array();
+    }
+    $requestData['extra']['lead_id'] = 1234567890;
 	
 	// Параметр связывания Google Analytics
 	if( isset($_POST['_ga']) ){
-		$requestData['_ga'] = $_POST['_ga'];	
+		$requestData['_ga'] = $_POST['_ga'];
 	}
 	
 	// Источник для TicketForEvent
@@ -34,6 +35,11 @@
 	// Итоговый адрес для редиректа
 	$url = 'https://buy.ticketforevent.com/script/redirectForm.php?' . $requestQueryString;	
 
-	header('Location: ' . $url);
-	
+	echo json_encode([
+	    'success' => true,
+        'url' => $url
+    ]);
+
+	exit;
+
 ?>

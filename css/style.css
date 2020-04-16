@@ -1,0 +1,235 @@
+body {
+    font-family: sans-serif;
+}
+
+.page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px 0;
+}
+
+form {
+    padding: 15px;
+    margin-left: -15px;
+    background-color: #f8f8f8;
+}
+
+form label {
+    display: block;
+    margin: 0 0 20px;
+    font-size: 90%;
+}
+
+label .name {
+    display: inline-block;
+    width: 100px;
+}
+
+.ticket {
+    position: relative;
+}
+
+.ticket .deleteTicket {
+    opacity: .5;
+    cursor: pointer;
+    border-style: dashed;
+    border-width: 0 0 1px;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    font-size: 12px;
+}
+
+.ticket .deleteTicket:hover {
+    color: #d00;
+}
+
+#fieldSetToCopy .deleteTicket {
+    display: none;
+}
+
+fieldset {
+    border-style: solid;
+    margin-bottom: 10px;
+}
+
+fieldset legend {
+    font-variant: small-caps;
+    font-size: 80%;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #777;
+}
+
+.actions {
+    text-align: right;
+    padding: 5px 0 0;
+}
+
+.actions button {
+    border-style: solid;
+    border-width: 0;
+    border-radius: 5px;
+    padding: 6px 12px;
+}
+
+.actions button[type="submit"] {
+    background-color: #090;
+    color: #fff;
+}
+
+.php-preview {
+    position: relative;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, .9);
+    color: #e8e8e8;
+    padding: 15px;
+    box-sizing: border-box;
+    font-family: 'Courier New';
+    font-size: 12px;
+    white-space: pre;
+    line-height: 1;
+    padding-left: 55px;
+}
+
+.php-preview::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    content: '';
+    height: 100%;
+    z-index: 3;
+    background-color: #000;
+}
+
+.line {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+.line-comment {
+    color: #090;
+}
+
+.line::before {
+    color: #555;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    margin-left: -55px;
+    height: 100%;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: right;
+    content: attr(data-ln);
+    z-index: 5;
+}
+
+.doctable {
+    border-collapse: collapse;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #777;
+    font-size: 12px;
+}
+
+.doctable th{
+    background-color: rgba(0,0,0,.1);
+}
+.doctable th,
+.doctable td {
+    border-style: solid;
+    border-width: 1px;
+    padding: 8px;
+    text-align: left;
+    valign: top;
+}
+
+.extra-data {
+    padding: 15px;
+    background-color: rgba(0, 0, 0, .025);
+}
+
+.extra-data .name {
+    width: 200px;
+}
+
+.extra-data label {
+    margin-bottom: 10px;
+}
+
+.field-required .name {
+    position: relative;
+    font-weight: bold;
+}
+
+.field-required .name::before {
+    position: absolute;
+    right: 100%;
+    top: 10%;
+    color: #d00;
+    content: '*';
+    font-weight: bold;
+}
+.field-description{
+    font-size:smaller;
+    color:#777;
+}
+
+#notifications_place{
+    position: fixed;
+    bottom: 0;
+    left:0;
+    width:100%;
+    height: auto;
+    max-height: 50%;
+    overflow:auto;
+    text-align:center;
+    box-sizing: border-box;
+    padding:15px;
+}
+.note{
+    background-color: rgba(0,0,0,.65);
+    padding:10px;
+    box-sizing: border-box;
+    border-radius:8px;
+    color:#fff;
+    font-size:12px;
+    text-align:left;
+    display:block;
+    max-width:400px;
+    text-align:left;
+    margin:5px auto 0;
+    position:relative;
+    word-wrap: break-word;
+    overflow:hidden;
+}
+.note::before{
+    position: absolute;
+    top:0;
+    left:0;
+    width:0;
+    content:'';
+    background-color:cyan;
+    height:5px;
+    transition: width 15s linear;
+}
+.note.show-progress::before{
+    width:100%;
+}
+.frame-remover{
+    background-color:#d00;
+    cursor:pointer;
+}
+.note.frame-remover::before{
+    transition: width 360s linear;
+}
+transition: width 15s linear;
+}
+.frame-remover:hover{
+    box-shadow:0 0 0 2px gold;
+}

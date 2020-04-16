@@ -4,93 +4,183 @@
 	<meta charset="utf-8" />
 	<title>RedirectForm example for excursion-1— TicketForEvent</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<style>
-	body{ font-family: sans-serif; }
-	.page{ max-width:800px; margin:0 auto; padding:50px 0; }
-	form{ padding:15px; margin-left:-15px; background-color:#f8f8f8; }
-	form label{ display:block; margin:0 0 20px; font-size:90%; }
-	label .name{ display:inline-block; width:100px;  }
-	.ticket{ position:relative; }
-	.ticket .deleteTicket{ opacity:.5; cursor:pointer; border-style:dashed; border-width:0 0 1px; position: absolute; right:10px; top:0; font-size:12px; }
-	.ticket .deleteTicket:hover{ color:#d00; }
-	#fieldSetToCopy .deleteTicket{ display:none; }
-	fieldset{ border-style:solid; margin-bottom:10px; }
-	fieldset legend{ font-variant:small-caps; font-size:80%; padding-left:10px; padding-right:10px; color:#777; }
-	
-	.actions{ text-align:right; padding:5px 0 0; } 
-	.actions button{ border-style:solid; border-width:0; border-radius:5px; padding:6px 12px; }
-	.actions button[type="submit"]{ background-color:#090; color:#fff; }
-	
-	.php-preview{ position:relative; overflow:auto; background-color:rgba(0,0,0,.9); color:#e8e8e8; padding:15px; box-sizing: border-box; font-family: 'Courier New'; font-size:12px; white-space: pre; line-height:1; padding-left:55px; }
-	.php-preview::before{ position:absolute; top:0; left:0; width:40px; content:''; height:100%; z-index:3; background-color:#000; }
-	.line{ display:block; position: relative; margin:0; padding:0; }
-	.line-comment{ color:#090; }
-	.line::before{ color:#555; position: absolute; left:0; top:0; width:30px; margin-left:-55px; height:100%; box-sizing:border-box; display:inline-block; text-align:right; content:attr(data-ln); z-index:5; }
-	
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=demo2_v1">
+	<script src="https://ticketforevent.com/js/jquery.js"></script>
 </head>
 <body>
 
 	<div class="page">
+
+		<p><a href="https://github.com/matvey-andreyev/ticketforevent-redirectform-example">github.com/matvey-andreyev/ticketforevent-redirectform-example</a></p>
 			
-			
-			
-			<p>Простая форма, отправляющая данные методом POST на гипотетический скрипт save.php. Без использования AJAX.</p>
+			<p>Простая форма, отправляющая данные по AJAX на скрипт save.php.</p>
+			<p>Save.php отвечает объектом: {'success' : true|false, 'url' : '...' }. Если true, то на странице создается невидимый iframe с указанным URL.</p>
+			<p>Iframe передает на текущую страницу сообщения через postMessage с идентифицирующим полем type и доп. данными:</p>
+			<table class="doctable doctable-messages">
+				<thead>
+					<tr>
+						<th>type</th>
+						<th>смысл</th>
+						<th>доп. данные</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>ticketforevent_loaded_notification</td>
+						<td>фрейм с анкетой загрузился</td>
+						<td>—</td>
+					</tr>
+					<tr>
+						<td>ticketforevent_error_notification</td>
+						<td>создание заказа внутри фрейма не удалось</td>
+						<td>message: текст ошибки</td>
+					</tr>
+					<tr>
+						<td>ticketforevent_order_info</td>
+						<td>заказ успешно создан</td>
+						<td>
+							order_id: номер заказа в TicketForEvent<Br/>
+							order_status: строка с названием статуса. Обычно будет «pending»
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 			<p>Параметр alias передан в скрытом поле, но его можно и просто подставить на серверной стороне.</p>
-			<p><a href="https://github.com/matvey-andreyev/ticketforevent-redirectform-example">github.com/matvey-andreyev/ticketforevent-redirectform-example</a></p>
 			
 			<form action="save.php" method="post">
 			
 				<!-- Можете передавать alias из формы, или добавлять в коде send.php -->
 				<input type="hidden" name="alias" value="excursion-1" />
-				
+
+				<!-- Отдельный билет -->
 				<fieldset class="ticket" id="fieldSetToCopy">
+
 					<legend>Билет <span class="number"></span></legend>
-					<!-- Можете передавать тип билета из формы, или добавлять в коде send.php -->
-					<div>
+
+					<div class="field-required">
 						<p>Выберите тип билета:</p>
-						<label><input type="radio" name="types[1]" value="excursion_common_ticket" checked="checked" /> Экскурсия для юрлиц</label>
+						<label><input required="required" type="radio" name="types[1]" value="excursion_common_ticket" checked="checked" /> Экскурсия для юрлиц<br/>
+						<span class="field-description">Пользователь не должен выбирать тип билета. Это поле стоит захардкодить в бэкенде.</span>
+						</label>
 					</div>
 					
-					<div>
+					<div class="field-required">
 						<label><span class="name">Какая экскурсия вам нужна?</span></label>
-						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 10 человек (10 часов)" /> Экскурсия на 10 человек (10 часов)</label>
-						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 100 человек (50 часов)" /> Экскурсия на 100 человек (50 часов)</label>
-						<label><input type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 1000 человек (100 часов)" /> Экскурсия на 1000 человек (100 часов)</label>
+						<label><input required="required" type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 10 человек (10 часов)" /> Экскурсия на 10 человек (10 часов)</label>
+						<label><input required="required" type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 100 человек (50 часов)" /> Экскурсия на 100 человек (50 часов)</label>
+						<label><input required="required" type="radio" name="purchased_excursion_title[1]" value="Экскурсия на 1000 человек (100 часов)" /> Экскурсия на 1000 человек (100 часов)</label>
 					</div>
 					
-					<div>
-						<label><span class="name">Имя:</span> <input name="fname[1]" /></label>
+					<div class="field-required">
+						<label><span class="name">Имя:</span> <input required="required" name="fname[1]" /></label>
 					</div>
 					
-					<div>
-						<label><span class="name">Фамилия:</span> <input name="lname[1]" /></label>
+					<div class="field-required">
+						<label><span class="name">Фамилия:</span> <input required="required" name="lname[1]" /></label>
 					</div>
 					
-					<div>
-						<label><span class="name">Телефон:</span> <input name="phone[1]" /></label>
+					<div class="field-required">
+						<label><span class="name">Телефон:</span> <input required="required" name="phone[1]" /></label>
 					</div>
 					
-					<div>
-						<label><span class="name">E-mail:</span> <input name="email[1]" /></label>
+					<div class="field-required">
+						<label><span class="name">E-mail:</span> <input required="required" name="email[1]" /></label>
 					</div>
 					
-					<div>
-						<label><span class="name">Company:</span> <input name="company[1]" /></label>
+					<div class="field-required">
+						<label><span class="name">Company:</span> <input required="required" name="company[1]" /></label>
 					</div>
 
 					
-					<div>
-						<label><span class="name">Планируемая дата посещения:</span> <input name="planned_visit_date[1]" /> (формат: 2020-12-30)</label>
+					<div class="field-required">
+						<label><span class="name">Планируемая дата посещения:</span> <input required="required" name="planned_visit_date[1]" /> (формат: 2020-12-30)</label>
 					</div>
 					
 					<span class="deleteTicket">Удалить этот билет</span>
 					
 				</fieldset>
-					
+
+				<!--
+				Пример ввода цены.
+				Разрешать пользователю заполнять цену самостоятельно,
+				или не разрешать — на ваше усмотрение.
+				В настройках TicketForEvent можно указать мин. и макс цены.
+				-->
 				<div>
 					<label><span class="name">Введите цену:</span> <input name="typePrice[excursion_common_ticket]" type="number" /></label>
 				</div>
+
+
+				<!--
+				Дополнительные данные о заказе.
+				Относятся ко всему заказу, а не к отдельным билетам.
+				-->
+				<div class="extra-data">
+
+					<div class="field-required">
+						<label><span class="name">Страна:</span> <input name="extra[billing_country]" size="2" minlength="2" maxlength="2" required="required" /><br/>
+						<span class="field-description">Двухбуквенный код страны. Например, «RU». Обратите внимание: набор данных юрлиц очень отличается в разных странах. По сути, мы с вами делаем страничку только для юрлиц из РФ.</span></label>
+					</div>
+
+					<div>
+						<label><span class="name">Юридический адрес:</span> <input name="extra[legal_address]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Почтовый адрес:</span> <input name="extra[postal_address]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">ИНН:</span> <input name="extra[inn]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">КПП:</span> <input name="extra[kpp]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">ОГРН:</span> <input name="extra[ogrn]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">ОКПО:</span> <input name="extra[okpo]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">К/с:</span> <input name="extra[ks]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Р/с:</span> <input name="extra[rs]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">БИК:</span> <input name="extra[bik]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Банк:</span> <input name="extra[bank]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Банковские реквизиты:</span> <input name="extra[bank_details]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Действует на основании:</span> <input name="extra[acts_based_on]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Полное ФИО подписанта:</span> <input name="extra[signee_fio]" /></label>
+					</div>
+
+					<div>
+						<label><span class="name">Должность подписанта:</span> <input name="extra[signee_position]" /></label>
+					</div>
+
+				</div>
+
 				
 				<!-- Для примера — поле, в который JS подставит document.referrer -->
 				<input id="referrerSource" name="source" type="hidden" />
@@ -108,77 +198,8 @@
 			
 	</div>
 
-<script>
-(function(){
 
-	/* JS-код здесь для презентационных целей. На сбор адреса он не влияет. */
+	<script src="js/scripts.js?v=demo2_v1"></script>
 
-	var addTicket,
-		deleteTicket,
-		numerateTickets,
-		addedTicketsCount = 0,
-		setReferrerToSource;
-	
-	// Заполнение input#referrerSource
-	setReferrerToSource = function setReferrerToSource(){
-		if(document.referrer){
-			document.getElementById('referrerSource').value = document.referrer;
-		}
-	}
-	
-	// Заполнение input#linkerParam данными из первого счетчика Гугл Аналитикс
-	setLinkerParam = function setLinkerParam(){
-		if(typeof ga === 'function' && typeof ga.getAll === 'function' && ga.getAll().length ){
-			document.getElementById('linkerParam').value = ga.getAll()[0].get('linkerParam').split('=').pop();
-		}
-	}
-		
-	// Добавление билета в форму.
-	addTicket = function addTicket(){
-		var newEl = document.createElement('div'),
-			fieldset = document.getElementById('fieldSetToCopy'),
-			insertPlace = this.parentNode; // div.actions в нашем случае
-		
-		newEl.classList.add('added-ticket');
-		newEl.innerHTML = fieldset.outerHTML.replace('id="fieldSetToCopy"','').replace('types[1]','types[00000000]');
-		
-		insertPlace.parentNode.insertBefore(newEl, insertPlace); 
-		
-		newEl.getElementsByClassName('deleteTicket')[0].onclick = deleteTicket;
-		
-		numerateTickets();
-		return false; //
-		
-	}
-
-	// Удаление билета из формы
-	deleteTicket = function deleteTicket(){
-		var victim = this.parentNode.parentNode;
-		victim.parentNode.removeChild(victim);
-		numerateTickets();
-	}
-
-	numerateTickets = function numerateTickets(){
-		var tickets = document.querySelectorAll('.ticket'),
-			number,
-			inputs;
-		for( var i = 0; i<tickets.length; i++ ){
-			number = tickets[i].getElementsByTagName('legend')[0].getElementsByTagName('span')[0];
-			number.innerHTML = i + 1;
-			inputs = tickets[i].getElementsByTagName('input');
-			for(var j = 0; j< inputs.length; j++){
-				inputs[j].setAttribute('name', inputs[j].getAttribute('name').replace(/\[\d+\]/, '['+ (i+1) +']'));
-			}
-		}
-	}
-
-	document.getElementById('addTicket').onclick = addTicket;
-	numerateTickets();
-	setReferrerToSource();
-	setLinkerParam();
-	
-})();
-</script>
-	
 </body>
 </html>
